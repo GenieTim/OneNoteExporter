@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OneNote Exporter</title>
+  <script src="./onenote-diary-export.bundle.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <div>
+        <h1 class="title">OneNote Exporter</h1>
+        <p>
+          Enter the following fields to download your OneNote Export. You might have to login first.
+          Empty fields lead to getting a list of sub-elements.
+          You may enter either the start string of the searched object or its whole id.
+        </p>
+        <div class="field">
+          <label class="label">Notebook</label>
+          <div class="control">
+            <input class="input" type="text" name="notebook" placeholder="Notebook">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Section</label>
+          <div class="control">
+            <input class="input" type="text" name="section" placeholder="Section">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Pages</label>
+          <div class="control">
+            <input class="input" type="text" name="pages" placeholder="Pages">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control" id="submitBtn-wrapper">
+            <button class="button" type="button" name="submitBtn">Go!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div id="target">
+
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>
