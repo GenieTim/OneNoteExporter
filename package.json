@@ -3,9 +3,6 @@
   "description": "Export your OneNote pages as html.",
   "version": "0.0.0",
   "author": "Tim Bernhard @GenieTim",
-  "bin": {
-    "relationship-analyzer": "./bin/run"
-  },
   "bugs": "https://github.com/GenieTim/OneNoteExporter/issues",
   "dependencies": {
     "msal": "^1.1.3"
@@ -24,12 +21,12 @@
   ],
   "homepage": "https://github.com/GenieTim/OneNoteExporter",
   "keywords": [
-    "oclif"
+    "onenote"
   ],
   "license": "GPL-3.0-or-later",
-  "main": "src/onenote-diary-export.js",
+  "main": "src/onenote-export.js",
   "repository": "GenieTim/OneNoteExporter",
   "scripts": {
-    "compile": "browserify src/form-handler.js > src/onenote-diary-export.bundle.js"
+    "compile": "browserify src/form-handler.js > src/onenote-export.bundle.js"
   }
 }

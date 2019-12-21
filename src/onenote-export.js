@@ -14,7 +14,7 @@ class OneNoteDiaryExport {
   async run(flags) {
     this.serviceRootUrl = 'https://graph.microsoft.com/v1.0/me/onenote/'
     this.msApi = new MsGraph(this.logger)
-    const {noteBookId, sectionId, pages} = flags
+    const { noteBookId, sectionId, pages } = flags
     if (pages) {
       // All set. load & process data
       const text = await this.loadContentFromOneNote(noteBookId, sectionId, pages)
@@ -122,9 +122,10 @@ class OneNoteDiaryExport {
    */
   async listPagesFromOneNote(noteBookId, sectionId) {
     if (!this.isOneNoteId(sectionId)) {
-      let sections = await this.searchSectionsFromOneNote(noteBookId, sectionId)
+      let sections = await this.searchSectionIdsFromOneNote(noteBookId, sectionId);
       // Optinionated: choose first result
-      sectionId = sections.value[0].id;
+      // eslint-disable-next-line prefer-destructuring
+      sectionId = sections[0]
     }
     let pages = await this.msApi.makeGetRequest(`${this.serviceRootUrl}sections/${sectionId}/pages`)
     this.log('Please specify pages with "-p". Following ids are available:')
