@@ -64,3 +64,6 @@ diary-export-*.html
 notes.js
 config/msal.config.js
 src/onenote-diary-export.bundle.js
+
+notes
+user_data
