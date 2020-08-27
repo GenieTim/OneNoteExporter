@@ -5,14 +5,14 @@
   "author": "Tim Bernhard @GenieTim",
   "bugs": "https://github.com/GenieTim/OneNoteExporter/issues",
   "dependencies": {
-    "cli-ux": "^5.4.5",
-    "msal": "^1.2.2",
-    "puppeteer": "^2.1.1"
+    "cli-ux": "^5.4.10",
+    "msal": "^1.4.0",
+    "puppeteer": "^5.2.1"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "eslint": "^7.7.0",
     "eslint-config-oclif": "^3.1",
-    "globby": "^11.0.0"
+    "globby": "^11.0.1"
   },
   "engines": {
     "node": ">=8.0.0"
