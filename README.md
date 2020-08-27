@@ -3,6 +3,12 @@ Export some OneNote pages as a combined HTML file.
 
 At the moment, it works for me, but may need additional adjustments for your use.
 
+- [OneNoteExporter](#onenoteexporter)
+  - [Overview](#overview)
+  - [Usage](#usage)
+    - [Using API](#using-api)
+    - [Using Browser](#using-browser)
+
 ## Overview
 
 Motivation: export certain pages automated.
