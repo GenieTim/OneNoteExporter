@@ -2,6 +2,7 @@
 Export some OneNote pages as a combined HTML file.
 
 At the moment, it works for me, but may need additional adjustments for your use.
+An introduction how I used this repo can be found in my [Blog](https://www.genieblog.ch/blog/en/2020/onennote-to-latex).
 
 - [OneNoteExporter](#onenoteexporter)
   - [Overview](#overview)
@@ -17,6 +18,7 @@ Unfortunately, I did not find an easy way around a web-interface for the Office 
 
 ## Usage
 
+Make sure to have [NodeJS](https://nodejs.org/en/) and [yarn](https://yarnpkg.com/) installed.
 After downloading the repository, run `yarn` in this directory to install all necessary components.
 
 ### Using API 

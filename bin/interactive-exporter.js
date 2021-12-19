@@ -1,7 +1,8 @@
 const fs = require('fs')
 const puppeteer = require('puppeteer')
 const { cli } = require('cli-ux')
-const crypto = require("crypto");
+const crypto = require("crypto")
+const cheerio = require('cheerio')
 
 class InteractiveExporter {
   async run() {
@@ -15,6 +16,10 @@ class InteractiveExporter {
       await this.downloadCurrentPage()
     }
     this.logger.log("Done. Thank you for using the InteractiveExporter.")
+    await this.driver.close()
+    await this.browser.close()
+    
+    return 0
   }
 
   /**
@@ -31,8 +36,9 @@ class InteractiveExporter {
     const title = await content.$eval("#PageContentContainer .Title .TitleOutline", e => e.innerText)
     const saveTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase()
     const saveEnding = crypto.randomBytes(8).toString("hex")
-    const filename = `${saveTitle}${saveEnding}.html`;
-    await fs.writeFile(filename, await content.evaluate(node => node.innerHTML), { "encoding": "utf8" }, err => {
+    const filename = `${saveTitle}${saveEnding}.html`
+    const htmlContent = await content.evaluate(node => node.innerHTML)
+    await fs.writeFile(filename, this.cleanupHtml(htmlContent), { "encoding": "utf8" }, err => {
       if (err) {
         this.logger.error(err)
       }
@@ -70,6 +76,24 @@ class InteractiveExporter {
       "height": 0,
       "width": 0
     })
+  }
+
+  /**
+   * Cleanup the HTML some more
+   * 
+   * @param {string} htmlString the HTML to clean
+   * @returns {string} the cleaned HTML
+   */
+  cleanupHtml(htmlString) { 
+    const $ = cheerio.load(htmlString)
+
+    $('[unselectable="on"]').remove()
+
+    $('span.DragHandle').remove()
+
+    $('.HiddenParagraph').remove()
+
+    return $.html()
   }
 }
 

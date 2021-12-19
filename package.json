@@ -5,6 +5,7 @@
   "author": "Tim Bernhard @GenieTim",
   "bugs": "https://github.com/GenieTim/OneNoteExporter/issues",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
     "cli-ux": "^5.4.10",
     "msal": "^1.4.0",
     "puppeteer": "^5.2.1"
