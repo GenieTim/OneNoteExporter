@@ -140,9 +140,12 @@ module.exports = {
         "no-lone-blocks": "error",
         "no-lonely-if": "error",
         "no-loop-func": "error",
-        "no-magic-numbers": ["error", {
-            ignoreArrayIndexes: true
-        }],
+        "no-magic-numbers": [
+"error",
+{
+            "ignoreArrayIndexes": true
+        }
+],
         "no-mixed-operators": "error",
         "no-mixed-requires": "error",
         "no-multi-assign": "error",

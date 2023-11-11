@@ -5,15 +5,15 @@
   "author": "Tim Bernhard @GenieTim",
   "bugs": "https://github.com/GenieTim/OneNoteExporter/issues",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.10",
-    "cli-ux": "^5.4.10",
-    "msal": "^1.4.0",
-    "puppeteer": "^5.2.1"
+    "cheerio": "^1.0.0-rc.12",
+    "cli-ux": "^6.0.9",
+    "msal": "^1.4.18",
+    "puppeteer": "^21.5.1"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
-    "eslint-config-oclif": "^3.1",
-    "globby": "^11.0.1"
+    "eslint": "^8.53.0",
+    "eslint-config-oclif": "^5.0.0",
+    "globby": "^14.0.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -30,6 +30,7 @@
   "main": "src/onenote-export.js",
   "repository": "GenieTim/OneNoteExporter",
   "scripts": {
-    "compile": "browserify src/form-handler.js > src/onenote-export.bundle.js"
+    "compile": "browserify src/form-handler.js > src/onenote-export.bundle.js",
+    "fix-cs": "eslint --fix ./bin; eslint --fix ./src"
   }
 }

@@ -14,7 +14,7 @@ class OneNoteDiaryExport {
   async run(flags) {
     this.serviceRootUrl = 'https://graph.microsoft.com/v1.0/me/onenote/'
     this.msApi = new MsGraph(this.logger)
-    const { noteBookId, sectionId, pages } = flags
+    const {noteBookId, sectionId, pages} = flags
     if (pages) {
       // All set. load & process data
       const text = await this.loadContentFromOneNote(noteBookId, sectionId, pages)

@@ -1,6 +1,6 @@
 const fs = require('fs')
 const puppeteer = require('puppeteer')
-const { cli } = require('cli-ux')
+const {cli} = require('cli-ux')
 const crypto = require("crypto")
 const cheerio = require('cheerio')
 
@@ -18,13 +18,13 @@ class InteractiveExporter {
     this.logger.log("Done. Thank you for using the InteractiveExporter.")
     await this.driver.close()
     await this.browser.close()
-    
+
     return 0
   }
 
   /**
    * Download the content frame of the OneNote page to a file
-   * 
+   *
    * @returns {void} void
    */
   async downloadCurrentPage() {
@@ -38,7 +38,7 @@ class InteractiveExporter {
     const saveEnding = crypto.randomBytes(8).toString("hex")
     const filename = `${saveTitle}${saveEnding}.html`
     const htmlContent = await content.evaluate(node => node.innerHTML)
-    await fs.writeFile(filename, this.cleanupHtml(htmlContent), { "encoding": "utf8" }, err => {
+    await fs.writeFile(filename, this.cleanupHtml(htmlContent), {"encoding": "utf8"}, err => {
       if (err) {
         this.logger.error(err)
       }
@@ -48,7 +48,7 @@ class InteractiveExporter {
 
   /**
    * Set up the browser
-   * 
+   *
    * @returns {void} void
    */
   async initializeBrowser() {
@@ -61,7 +61,7 @@ class InteractiveExporter {
 
   /**
    * Open a new page/tab
-   * 
+   *
    * @returns {void} void
    */
   async openNewPage() {
@@ -80,11 +80,11 @@ class InteractiveExporter {
 
   /**
    * Cleanup the HTML some more
-   * 
+   *
    * @param {string} htmlString the HTML to clean
    * @returns {string} the cleaned HTML
    */
-  cleanupHtml(htmlString) { 
+  cleanupHtml(htmlString) {
     const $ = cheerio.load(htmlString)
 
     $('[unselectable="on"]').remove()
