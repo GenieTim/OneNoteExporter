@@ -8,7 +8,7 @@ class InteractiveExporter {
   async run() {
     this.logger = console;
     await this.initializeBrowser()
-    this.driver.goto("https://onenote.com")
+    await this.driver.goto("https://onenote.com")
     this.logger.log("Login & navigate to the OneNote page to download.")
     let addDownload = true;
     while (addDownload) {
@@ -32,7 +32,7 @@ class InteractiveExporter {
     if (!contentFrame) {
       this.logger.error("Did not find frame.")
     }
-    const content = await contentFrame.$("#WACDocumentPanel.EditMode")
+    const content = await contentFrame.$("#WACDocumentPanelContent")
     const title = await content.$eval("#PageContentContainer .Title .TitleOutline", e => e.innerText)
     const saveTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase()
     const saveEnding = crypto.randomBytes(8).toString("hex")
