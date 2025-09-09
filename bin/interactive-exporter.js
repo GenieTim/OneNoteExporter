@@ -9,15 +9,19 @@ const cheerio = require('cheerio');
 const RANDOM_BYTES_LENGTH = 8;
 const EXIT_SUCCESS = 0;
 const WAIT_TIME_MS = 1000;
+const PAGE_LOAD_WAIT_MS = 3000;  // Longer wait for page content to load
+const SCROLL_WAIT_MS = 2000;     // Wait after scrolling for content to load
 const ARGS_SLICE_INDEX = 2;
 
 const SELECTORS = {
+  WEBAPP_IFRAME: '#WebApplicationFrame',
   CONTENT_FRAME: 'WebApplicationFrame',
   PAGE_CONTENT: '#WACDocumentPanelContent',
   PAGE_TITLE: '#PageContentContainer .Title .TitleOutline',
   PAGES_IN_SECTION: '#NavPane #PageList .pageNode content',
   SECTIONS_IN_NOTEBOOK: '#NavPane #NavPaneSectionList .sectionList .sectionItem content',
-  SECTION_GROUPS: '#NavPane #NavPaneSectionList [role="treeitem"]'
+  SECTION_GROUPS: '#NavPane #NavPaneSectionList [role="treeitem"]',
+  VIEW_PANEL: '#WACViewPanel'
 };
 
 // Download modes
@@ -135,7 +139,10 @@ Examples:
   async downloadCurrentSection() {
     this.logger.log('Downloading all pages in current section...');
 
-    const pageElements = await this.driver.$$(SELECTORS.PAGES_IN_SECTION);
+    // Ensure we're using the correct context (iframe or main page)
+    const context = await this.ensureOneNoteContext();
+
+    const pageElements = await context.$$(SELECTORS.PAGES_IN_SECTION);
     if (pageElements.length === 0) {
       this.logger.warn('No pages found in current section.');
       return;
@@ -148,7 +155,7 @@ Examples:
         this.logger.log(`Downloading page ${i + 1}/${pageElements.length}...`);
 
         // Click on the page to navigate to it
-        const pageElement = await this.driver.$$(SELECTORS.PAGES_IN_SECTION);
+        const pageElement = await context.$$(SELECTORS.PAGES_IN_SECTION);
         if (pageElement[i]) {
           await pageElement[i].click();
           await this.waitForPageLoad();
@@ -166,10 +173,13 @@ Examples:
   async downloadCurrentNotebook() {
     this.logger.log('Downloading entire notebook...');
 
+    // Ensure we're using the correct context (iframe or main page)
+    const context = await this.ensureOneNoteContext();
+
     // First, expand all section groups
     await this.expandSectionGroups();
 
-    const sectionElements = await this.driver.$$(SELECTORS.SECTIONS_IN_NOTEBOOK);
+    const sectionElements = await context.$$(SELECTORS.SECTIONS_IN_NOTEBOOK);
     if (sectionElements.length === 0) {
       this.logger.warn('No sections found in current notebook.');
       return;
@@ -182,7 +192,7 @@ Examples:
         this.logger.log(`Processing section ${i + 1}/${sectionElements.length}...`);
 
         // Get the section name before clicking
-        const sectionElement = await this.driver.$$(SELECTORS.SECTIONS_IN_NOTEBOOK);
+        const sectionElement = await context.$$(SELECTORS.SECTIONS_IN_NOTEBOOK);
         if (sectionElement[i]) {
           const sectionName = await sectionElement[i].evaluate(el => el.textContent.trim());
           const safeSectionName = sectionName.replace(/[^a-z0-9]/giu, '_').toLowerCase();
@@ -212,13 +222,14 @@ Examples:
    */
   async expandSectionGroups() {
     try {
-      const groupElements = await this.driver.$$(SELECTORS.SECTION_GROUPS);
+      const context = this.getOneNoteContext();
+      const groupElements = await context.$$(SELECTORS.SECTION_GROUPS);
       this.logger.log(`Expanding ${groupElements.length} section groups...`);
 
       for (const groupElement of groupElements) {
         try {
           await groupElement.click();
-          await this.driver.waitForTimeout(WAIT_TIME_MS / 2);
+          await new Promise(resolve => setTimeout(resolve, WAIT_TIME_MS / 2));
         } catch (error) {
           // Some elements might not be clickable, continue
           this.logger.debug('Could not click section group:', error.message);
@@ -232,10 +243,72 @@ Examples:
   }
 
   /**
-   * Wait for page to load
+   * Check if OneNote is in an iframe and switch context if needed
+   */
+  async ensureOneNoteContext() {
+    try {
+      // Check if the WebApplicationFrame iframe exists
+      const webAppFrame = await this.driver.$(SELECTORS.WEBAPP_IFRAME);
+      if (webAppFrame) {
+        this.logger.log('OneNote is running in iframe, switching context...');
+        const frame = await webAppFrame.contentFrame();
+        if (frame) {
+          this.oneNoteFrame = frame;
+          return frame;
+        }
+      }
+    } catch (error) {
+      this.logger.debug('No iframe detected, using main page context');
+    }
+    
+    // If no iframe, use the main page
+    this.oneNoteFrame = this.driver;
+    return this.driver;
+  }
+
+  /**
+   * Get the current OneNote context (iframe or main page)
+   */
+  getOneNoteContext() {
+    return this.oneNoteFrame || this.driver;
+  }
+
+  /**
+   * Wait for page to load and scroll to ensure all content loads
    */
   async waitForPageLoad() {
-    await this.driver.waitForTimeout(WAIT_TIME_MS);
+    // Initial wait for page load
+    await new Promise(resolve => setTimeout(resolve, PAGE_LOAD_WAIT_MS));
+    
+    try {
+      // Get the OneNote context and scroll down to load more content
+      const context = this.getOneNoteContext();
+      const viewPanel = await context.$(SELECTORS.VIEW_PANEL);
+      
+      if (viewPanel) {
+        this.logger.log('Scrolling to load additional content...');
+        
+        // Scroll down in the view panel to trigger loading of images and equations
+        await viewPanel.evaluate((element) => {
+          element.scrollTop = element.scrollHeight;
+        });
+        
+        // Wait for content to load after scrolling
+        await new Promise(resolve => setTimeout(resolve, SCROLL_WAIT_MS));
+        
+        // Scroll back to top for consistent view
+        await viewPanel.evaluate((element) => {
+          element.scrollTop = 0;
+        });
+        
+        // Small additional wait
+        await new Promise(resolve => setTimeout(resolve, WAIT_TIME_MS));
+      }
+    } catch (error) {
+      this.logger.warn('Could not scroll view panel:', error.message);
+      // Fall back to just the basic wait
+      await new Promise(resolve => setTimeout(resolve, WAIT_TIME_MS));
+    }
   }
 
   /**
